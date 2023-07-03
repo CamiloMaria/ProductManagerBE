@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ProductManager.Domain.Entities
 {
-    internal class Role
+    public class Role
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
 
     }
 }
