@@ -18,8 +18,4 @@
     <ProjectReference Include="..\ProductManager.Application\ProductManager.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>

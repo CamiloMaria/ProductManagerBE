@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProductManager.Application.Interfaces.Repositories
+namespace ProductManager.Infrastructure.Repositories
 {
-    internal interface IRolRepository
+    internal class UserRepository
     {
     }
 }
