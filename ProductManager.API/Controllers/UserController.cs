@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using ProductManager.Application.Interfaces;
+using ProductManager.Domain.Entities;
 
 namespace ProductManager.API.Controllers
 {
@@ -8,36 +8,77 @@ namespace ProductManager.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        // GET: api/<UserController>
+        private readonly IUserService _userService;
+
+        public UserController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> GetAllUsers()
         {
-            return new string[] { "value1", "value2" };
+            var users = await _userService.GetAllUsers();
+            return Ok(users);
         }
 
-        // GET api/<UserController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> GetUserById(int id) 
         {
-            return "value";
+            var user = await _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
         }
 
-        // POST api/<UserController>
+        [HttpPost("GetRol")]
+        public async Task<IActionResult> GetRolByUser([FromBody] User usuario)
+        {
+            var user = await _userService.GetRolByUser(usuario);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
+        }
+
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> AddUser([FromBody] User user)
         {
+            await _userService.AddUSer(user);
+            return Ok(user);
         }
 
-        // PUT api/<UserController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
         {
+            var existingUser = await _userService.GetUserById(id);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+
+            existingUser.Name = user.Name;
+            existingUser.Password = user.Password;
+            existingUser.Role = user.Role;
+
+            await _userService.UpdateUser(existingUser);
+            return Ok(existingUser);
         }
 
-        // DELETE api/<UserController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
+            var user = await _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            await _userService.DeleteUser(user);
+            return Ok(user);
         }
     }
 }

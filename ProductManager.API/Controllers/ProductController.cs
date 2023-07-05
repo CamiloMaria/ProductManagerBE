@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using ProductManager.Application.Interfaces;
+using ProductManager.Domain.Entities;
 
 namespace ProductManager.API.Controllers
 {
@@ -8,36 +8,67 @@ namespace ProductManager.API.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        // GET: api/<ProductController>
+        private readonly IProductService _productService;
+
+        public ProductController(IProductService productService)
+        {
+            _productService = productService;
+        }
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> GetAllProducts()
         {
-            return new string[] { "value1", "value2" };
+            var products = await _productService.GetAllProducts();
+            return Ok(products);
         }
 
-        // GET api/<ProductController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> GetProductById(int id)
         {
-            return "value";
+            var product = await _productService.GetProductById(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return Ok(product);
         }
 
-        // POST api/<ProductController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IActionResult> AddProducto([FromBody] Product product)
         {
+            await _productService.AddProduct(product);
+            return Ok(product);
         }
 
-        // PUT api/<ProductController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> UpdateProducto(int id, [FromBody] Product product)
         {
+            var existingProduct = await _productService.GetProductById(id);
+            if (existingProduct == null)
+            {
+                return NotFound();
+            }
+
+            existingProduct.Name = product.Name;
+            existingProduct.Description = product.Description;
+            existingProduct.Price = product.Price;
+            existingProduct.Image = product.Image;
+
+            await _productService.UpdateProduct(existingProduct);
+            return Ok(product);
         }
 
-        // DELETE api/<ProductController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> DeleteProduct(int id)
         {
+            var product = await _productService.GetProductById(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            await _productService.DeleteProduct(product);
+            return Ok(product);
         }
     }
 }
