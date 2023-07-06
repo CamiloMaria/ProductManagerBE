@@ -21,7 +21,7 @@ namespace ProductManager.API.Controllers
             var products = await _productService.GetAllProducts();
             return Ok(products);
         }
-
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(int id)
         {
